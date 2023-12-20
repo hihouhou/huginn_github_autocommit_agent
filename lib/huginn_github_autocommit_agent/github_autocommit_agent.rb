@@ -261,8 +261,12 @@ module Agents
       
       file_content = Base64.decode64(file_content_base64)
       current_version = file_content.match(/^ENV #{to_apply['pattern']} (.*)/)
-      if current_version && current_version[1] >= interpolated['version']
-        log "The current version is already greater than or equal to the given version. No replacement necessary."
+      v1 = Gem::Version.new(interpolated['version'].gsub(/^v/i, ''))
+      v2 = Gem::Version.new(current_version.to_s.split.last.gsub(/^v/i, ''))
+      comparison_result = v1 <=> v2
+
+      if comparison_result == 0 || comparison_result == -1
+        log "The current version (#{current_version.to_s.split.last}) is already greater than or equal to the given version (#{interpolated['version']}). No replacement necessary."
       else
         file_content.gsub!(/^ENV #{to_apply['pattern']}.*/, "ENV #{to_apply['pattern']} #{interpolated['version']}")
         update_content(to_apply['owner'],to_apply['my_repository'],to_apply['file'],file_content,sha)
