@@ -261,8 +261,8 @@ module Agents
       
       file_content = Base64.decode64(file_content_base64)
       current_version = file_content.match(/^ENV #{to_apply['pattern']} (.*)/)
-      v1 = Gem::Version.new(interpolated['version'].gsub(/^v/i, ''))
-      v2 = Gem::Version.new(current_version.to_s.split.last.gsub(/^v/i, ''))
+      v1 = Gem::Version.new(interpolated['version'].gsub(/^v/i, '').gsub(/^jenkins-/i, ''))
+      v2 = Gem::Version.new(current_version.to_s.split.last.gsub(/^v/i, '').gsub(/^jenkins-/i, ''))
       comparison_result = v1 <=> v2
 
       if comparison_result == 0 || comparison_result == -1
